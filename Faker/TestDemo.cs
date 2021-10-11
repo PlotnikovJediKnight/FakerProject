@@ -22,6 +22,10 @@ namespace Faker
             double p = faker.Create<double>();
             float f = faker.Create<float>();
 
+            DateTime date = faker.Create<DateTime>();
+
+            List<string> list = faker.Create<List<string>>();
+
             Console.WriteLine(d);
             Console.WriteLine(str);
             Console.WriteLine(p);
@@ -31,6 +35,10 @@ namespace Faker
             Console.WriteLine(sb);
             Console.WriteLine(ush);
             Console.WriteLine(uit);
+            Console.WriteLine(date);
+            foreach (string s in list){
+                Console.WriteLine(s + " + ");
+            }
             Console.ReadLine();
         }
     }

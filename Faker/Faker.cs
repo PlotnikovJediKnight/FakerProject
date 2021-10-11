@@ -13,7 +13,7 @@ namespace Faker
 
     public class Faker : IFaker
     {
-        private static readonly int SUPPORTED_TOTAL = 3;
+        private static readonly int SUPPORTED_TOTAL = 5;
         public Faker()
         {
             rand = new Random();
@@ -21,14 +21,16 @@ namespace Faker
             generators[0] = new IntGenerator();
             generators[1] = new StringGenerator();
             generators[2] = new RealGenerator();
+            generators[3] = new DateGenerator();
+            generators[4] = new ListGenerator();
         }
 
         public T Create<T>()
         {    
-            return (T) Create(typeof(T));
+            return (T) Recreate(typeof(T));
         }
         
-        private object Create(Type t)
+        private object Recreate(Type t)
         {
             for (int i = 0; i < SUPPORTED_TOTAL; ++i)
             {

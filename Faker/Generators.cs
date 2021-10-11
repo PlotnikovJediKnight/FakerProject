@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -94,7 +95,7 @@ namespace Faker
             if (CanGenerate(targetType))
             {
                 int stringLength = context.Random.Next(0, MAX_LENGTH);
-                object toReturn = getRandomString(stringLength, context.Random);
+                object toReturn = GetRandomString(stringLength, context.Random);
                 return toReturn;
             }
             else
@@ -113,7 +114,7 @@ namespace Faker
             }
         }
 
-        private String getRandomString(int length, Random random)
+        private String GetRandomString(int length, Random random)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
@@ -151,6 +152,79 @@ namespace Faker
                 default:
                     return false;
             }
+        }
+    }
+
+    public class DateGenerator : IGenerator
+    {
+        public override object Generate(GeneratorContext context)
+        {
+            Type targetType = context.TargetType;
+            if (CanGenerate(targetType))
+            {
+                object toReturn = GetRandomDate(context.Random);
+                return toReturn;
+            }
+            else
+                return null;
+        }
+
+        public override bool CanGenerate(Type type)
+        {
+            TypeCode typeCode = GetUnderlyingTypeCode(type);
+            switch (typeCode)
+            {
+                case TypeCode.DateTime:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        private DateTime GetRandomDate(Random random)
+        {
+            DateTime start = new DateTime(1995, 1, 1);
+            int range = (DateTime.Today - start).Days;
+            return start.AddDays(random.Next(range))
+                   .AddHours(random.Next(0, 23))
+                   .AddMinutes(random.Next(0, 59))
+                   .AddSeconds(random.Next(0, 59));
+        }
+    }
+
+    public class ListGenerator : IGenerator
+    {
+        private static readonly int MAX_ELEMENTS = 20;
+        public override object Generate(GeneratorContext context)
+        {
+            Type targetType = context.TargetType;
+            if (CanGenerate(targetType))
+            {
+                Type[] innerTypes = targetType.GetGenericArguments();
+                Type innerType = innerTypes[0];
+                if (innerTypes.Length != 1) throw new NotSupportedException();
+                int elementsCount = context.Random.Next(0, MAX_ELEMENTS);
+                object toReturn = Activator.CreateInstance(targetType);
+               
+                
+
+                for (int i = 0; i < elementsCount; ++i)
+                {
+                    MethodInfo method = typeof(Faker).GetMethods().Single(m => m.Name == "Create" && m.IsGenericMethodDefinition);
+                    method = method.MakeGenericMethod(innerType);
+                    object[] arr = new object[1]; arr[0] = method.Invoke(context.Faker, null);
+                    (targetType).GetMethod("Add").Invoke(toReturn, arr);
+                }
+                return toReturn;
+            }
+            else
+                return null;
+        }
+
+        public override bool CanGenerate(Type type)
+        {
+            if (type.GetGenericTypeDefinition() == typeof(List<>)) {  return true; }
+            return false;
         }
     }
 }
