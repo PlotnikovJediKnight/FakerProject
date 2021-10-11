@@ -6,10 +6,17 @@ using System.Threading.Tasks;
 
 namespace Faker
 {
-    class Faker
+    public interface IFaker
+    {
+        T Create<T>();
+    }
+
+    public class Faker : IFaker
     {
         public T Create<T>()
-        {    return (T) Create(typeof(T));}
+        {    
+            return (T) Create(typeof(T));
+        }
         
         private object Create(Type t)
         {
