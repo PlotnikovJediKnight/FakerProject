@@ -15,6 +15,21 @@ namespace Faker
     {
         delegate void test_method();
 
+        static void TestRealTypes()
+        {
+            Faker faker = new Faker();
+
+            float fl = faker.Create<float>();
+            double d = faker.Create<double>();
+
+            TestFramework.Assert(fl >= 0 && fl < float.MaxValue, "Float went wrong!");
+            TestFramework.Assert(d >= 0 && d < double.MaxValue, "Double went wrong!");
+            
+            Console.WriteLine("Float = " + fl);
+            Console.WriteLine("Double = " + d);
+            Console.WriteLine("==========================================");
+        }
+
         static void TestIntTypes()
         {
             Faker faker = new Faker();
@@ -36,6 +51,7 @@ namespace Faker
             Console.WriteLine("Unsigned short = " + us);
             Console.WriteLine("Int = " + i);
             Console.WriteLine("Short = " + sh);
+            Console.WriteLine("==========================================");
         }
 
         static void Main(String[] args)
@@ -48,6 +64,9 @@ namespace Faker
 
             testDelegate = TestIntTypes;
             r.RunTest(testDelegate, "IntTypesTest");
+
+            testDelegate = TestRealTypes;
+            r.RunTest(testDelegate, "RealTypesTest");
 
             Console.ReadLine();
         }
