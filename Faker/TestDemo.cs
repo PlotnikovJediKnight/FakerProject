@@ -70,6 +70,12 @@ namespace Faker
     }
     #endregion
 
+    class Dummy
+    {
+        public Dummy(int d, int f, int x) { throw new AccessViolationException(); }
+        public Dummy(string s) { throw new AccessViolationException(); Console.WriteLine("I'M FINE"); }
+    }
+
     class TestDemo
     {
         delegate void test_method();
@@ -257,6 +263,8 @@ namespace Faker
 
             testDelegate = TestCycle;
             r.RunTest(testDelegate, "CycleTest");
+
+            Dummy d = faker.Create<Dummy>();
 
             Console.ReadLine();
         }

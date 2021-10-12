@@ -36,27 +36,42 @@ namespace StructGeneratorNamespace
             ConstructorInfo[] p = targetType.GetConstructors();
             if (p.Length != 0)
             {
-                int maxParam = -1, maxInd = -1;
-                for (int i = 0; i < p.Length; ++i)
+                bool notInstantiated = true;
+                while (notInstantiated)
                 {
-                    if (p[i].GetParameters().Length > maxParam)
+                    int maxParam = -1, maxInd = -1;
+                    for (int i = 0; i < p.Length; ++i)
                     {
-                        maxParam = p[i].GetParameters().Length;
-                        maxInd = i;
+                        if (p[i]?.GetParameters().Length > maxParam)
+                        {
+                            maxParam = p[i].GetParameters().Length;
+                            maxInd = i;
+                        }
                     }
+
+                    if (maxInd == -1) break;
+
+                    ParameterInfo[] parametersInfo = p[maxInd].GetParameters();
+                    object[] parameters = new object[parametersInfo.Length];
+
+
+                    for (int i = 0; i < parameters.Length; ++i)
+                    {
+                        Type paramType = parametersInfo[i].ParameterType;
+                        parameters[i] = GetGenericCreate(paramType).Invoke(context.Faker, null);
+                    }
+
+                    object toReturn = null;
+                    try
+                    {
+                        toReturn = Activator.CreateInstance(targetType, parameters);
+                    }
+                    catch (Exception e) { Console.WriteLine(e.Message); toReturn = null; }
+
+                    if (toReturn != null) { notInstantiated = false; return toReturn; }
+                    p[maxInd] = null;
                 }
-
-                ParameterInfo[] parametersInfo = p[maxInd].GetParameters();
-                object[] parameters = new object[parametersInfo.Length];
-                
-
-                for (int i = 0; i < parameters.Length; ++i)
-                {
-                    Type paramType = parametersInfo[i].ParameterType;
-                    parameters[i] = GetGenericCreate(paramType).Invoke(context.Faker, null);
-                }
-
-                return Activator.CreateInstance(targetType, parameters);
+                return null;
             }
             else
             {
