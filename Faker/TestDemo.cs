@@ -5,14 +5,71 @@ using TestsProject;
 
 namespace Faker
 {
-    #region
-    class A
+    #region struct A
+    struct A
     {
-        private A() { }
+        private A(int D) { s = null; anotherString = null; d = 0; f = 0.0; Console.WriteLine("Private constructor"); }
+        public A(int D, double F) { s = "QWERTY"; anotherString = null; d = 0; f = 34.5678; }
+        public A(string s) { this.s = s; anotherString = "asdf"; d = 0; f = 0.0; }
+        public A(double t) { s = null; anotherString = null; d = 0; f = 12.0; }
+
+        public string s;
+        public string anotherString;
+        public int d;
+        public double f;
     }
     #endregion
 
-    
+    #region other structs
+    struct B
+    {
+        public string str;
+        public int a;
+        public double d;
+        DateTime date;
+    }
+
+    struct C
+    {
+        public short d;
+        public ushort b;
+        public B b__;
+    }
+
+    struct D
+    {
+        public C c;
+        public B b;
+    }
+
+    struct E
+    {
+        public D d;
+    }
+
+
+    #endregion
+
+    #region other classes
+    class AA
+    {
+        public AA(int x) { MyIntProperty = x; }
+        public AA(int x, int y) { MyIntProperty = x + y; }
+        public BB bb{ get; set; }
+        public int MyIntProperty { get; set; }
+    }
+
+    class BB
+    {
+        public CC cc{ get; set; }
+    }
+
+    class CC
+    {
+        public AA aa{ get; set; }
+    }
+    #endregion
+
     class TestDemo
     {
         delegate void test_method();
@@ -36,6 +93,54 @@ namespace Faker
                 Console.Write(var + " ");
             }
             Console.WriteLine();
+        }
+
+        static void TestCycle()
+        {
+            Faker faker = new Faker();
+
+            AA a = faker.Create<AA>();
+            TestFramework.Assert(a.MyIntProperty >= int.MinValue && a.MyIntProperty <= int.MaxValue, "Int init");
+            TestFramework.Assert(a.bb.cc.aa == null, "Cycle end");
+
+            Console.WriteLine(a.bb);
+            Console.WriteLine(a.MyIntProperty);
+            Console.WriteLine(a.bb.cc.aa == null ? "Null" : "Not null");
+        }
+
+        static void TestEnclosedStructs()
+        {
+            Faker faker = new Faker();
+
+            E e = faker.Create<E>();
+            TestFramework.Assert(e.d.b.str != null, "String init");
+            TestFramework.Assert(e.d.b.a >= 0 && e.d.b.a <= int.MaxValue , "Int init");
+            TestFramework.Assert(e.d.b.d >= 0.0 && e.d.b.d <= double.MaxValue, "Double init");
+            TestFramework.Assert(e.d.c.d >= 0.0 && e.d.c.d <= short.MaxValue, "Short init");
+            TestFramework.Assert(e.d.c.b >= 0.0 && e.d.c.b <= ushort.MaxValue, "UShort init");
+
+            Console.WriteLine(e.d.b.str);
+            Console.WriteLine(e.d.b.a);
+            Console.WriteLine(e.d.b.d);
+            Console.WriteLine(e.d.c.d);
+            Console.WriteLine(e.d.c.b);
+            Console.WriteLine("==========================================");
+        }
+
+        static void TestStructs()
+        {
+            Faker faker = new Faker();
+
+            A obj1 = faker.Create<A>();
+            TestFramework.AssertEqual(obj1.s, "QWERTY", "S field of A is supposed to be QWERTY!");
+            TestFramework.Assert(obj1.anotherString != null, "AnotherString field of A should have been initialized!");
+            TestFramework.Assert(obj1.f >= 0.0 && obj1.f <= double.MaxValue, "Double should have been initialized!");
+            TestFramework.Assert(obj1.d >= 0.0 && obj1.d <= int.MaxValue, "Int should have been initialized");
+            Console.WriteLine("S = " + obj1.s);
+            Console.WriteLine("AnotherString = " + obj1.anotherString);
+            Console.WriteLine("F = " + obj1.f);
+            Console.WriteLine("D = " + obj1.d);
+            Console.WriteLine("==========================================");
         }
 
         static void TestListType()
@@ -143,6 +248,15 @@ namespace Faker
 
             testDelegate = TestListType;
             r.RunTest(testDelegate, "ListTypeTest");
+
+            testDelegate = TestStructs;
+            r.RunTest(testDelegate, "StructsTest");
+
+            testDelegate = TestEnclosedStructs;
+            r.RunTest(testDelegate, "EnclosedStructsTest");
+
+            testDelegate = TestCycle;
+            r.RunTest(testDelegate, "CycleTest");
 
             Console.ReadLine();
         }
