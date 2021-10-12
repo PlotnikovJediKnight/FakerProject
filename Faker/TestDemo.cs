@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using TestsProject;
 
 namespace Faker
@@ -14,6 +16,61 @@ namespace Faker
     class TestDemo
     {
         delegate void test_method();
+
+        private static void printPrintList<T>(IList<T> list) where T : IList
+        {
+            foreach (T var in list)
+            {
+                foreach (object inner in var)
+                {
+                    Console.Write(inner + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        private static void printList<T>(IList<T> list)
+        {
+            foreach (object var in list)
+            {
+                Console.Write(var + " ");
+            }
+            Console.WriteLine();
+        }
+
+        static void TestListType()
+        {
+            Faker faker = new Faker();
+
+            List<int> intList = faker.Create<List<int>>();
+            List<double> doubleList = faker.Create<List<double>>();
+            List<string> stringList = faker.Create<List<string>>();
+            List<DateTime> dateList = faker.Create<List<DateTime>>();
+            List<List<string>> listList = faker.Create<List<List<string>>>();
+
+            TestFramework.Assert(intList != null, "IntegerList went wrong!");
+            TestFramework.Assert(doubleList != null, "DoubleList went wrong!");
+            TestFramework.Assert(stringList != null, "StringList went wrong!");
+            TestFramework.Assert(dateList != null, "DateList went wrong!");
+            TestFramework.Assert(listList != null, "ListList went wrong!");
+
+            printList(intList);
+            printList(doubleList);
+            printList(stringList);
+            printList(dateList);
+            printPrintList(listList);
+            Console.WriteLine("==========================================");
+        }
+
+        static void TestDateType()
+        {
+            Faker faker = new Faker();
+
+            DateTime dt = faker.Create<DateTime>();
+            TestFramework.Assert(dt != null, "DateTime went wrong!");
+            Console.WriteLine(dt);
+            Console.WriteLine("==========================================");
+        }
 
         static void TestStringType()
         {
@@ -80,6 +137,12 @@ namespace Faker
 
             testDelegate = TestStringType;
             r.RunTest(testDelegate, "StringTypeTest");
+
+            testDelegate = TestDateType;
+            r.RunTest(testDelegate, "DateTypeTest");
+
+            testDelegate = TestListType;
+            r.RunTest(testDelegate, "ListTypeTest");
 
             Console.ReadLine();
         }
