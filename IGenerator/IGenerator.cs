@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,6 +17,23 @@ namespace IGeneratorNamespace
             TypeCode typeCode = Type.GetTypeCode(type);
             return typeCode;
         }
+
+        protected MethodInfo GetGenericCreate(Type paramType)
+        {
+            MethodInfo method = typeof(IFaker).GetMethods().Single(m => m.Name == "Create" && m.IsGenericMethodDefinition);
+            method = method.MakeGenericMethod(paramType);
+            return method;
+        }
+
+
+        protected static object GetDefaultValue(Type t)
+        {
+            if (t.IsValueType)
+                return Activator.CreateInstance(t);
+            else
+                return null;
+        }
+
     }
 
     public class GeneratorContext

@@ -1,25 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-
 using IGeneratorNamespace;
 
-namespace StructGeneratorNamespace
+namespace ClassGeneratorNamespace
 {
-    public class StructGenerator : IGenerator
+    public class ClassGenerator : IGenerator
     {
 
         public override object Generate(GeneratorContext context)
         {
             Type targetType = context.TargetType;
+            string typeName = targetType.FullName;
 
             if (CanGenerate(targetType))
             {
+                //if (DoesCauseCycle(typeName))
+                //{
+                //    return null;
+                //}
+                //previous.Add(typeName);
+
                 object toReturn = InitializeObject(context, targetType);
                 InitializeFields(toReturn, context);
                 InitializeProperties(toReturn, context);
 
+                //previous.RemoveAt(previous.Count - 1);
                 return toReturn;
             }
             else
@@ -28,8 +33,13 @@ namespace StructGeneratorNamespace
 
         public override bool CanGenerate(Type type)
         {
-            return type.IsValueType && !type.IsPrimitive && !type.IsEnum;        
+            return type.IsValueType && !type.IsPrimitive && !type.IsEnum;
         }
+
+        //private bool DoesCauseCycle(string name)
+        //{
+        //    return previous.Contains(name);
+        //}
 
         private object InitializeObject(GeneratorContext context, Type targetType)
         {
@@ -48,7 +58,7 @@ namespace StructGeneratorNamespace
 
                 ParameterInfo[] parametersInfo = p[maxInd].GetParameters();
                 object[] parameters = new object[parametersInfo.Length];
-                
+
 
                 for (int i = 0; i < parameters.Length; ++i)
                 {
@@ -100,7 +110,8 @@ namespace StructGeneratorNamespace
 
         private bool IsPropertyInitializable(PropertyInfo info, object obj)
         {
-            if (info.CanRead && info.CanWrite) {
+            if (info.CanRead && info.CanWrite)
+            {
                 return (info.GetValue(obj) == null) || info.GetValue(obj).Equals(GetDefaultValue(info.PropertyType));
             }
             else

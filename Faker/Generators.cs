@@ -180,15 +180,14 @@ namespace Faker
                 Type[] innerTypes = targetType.GetGenericArguments();
                 Type innerType = innerTypes[0];
                 if (innerTypes.Length != 1) throw new NotSupportedException();
+
                 int elementsCount = context.Random.Next(0, MAX_ELEMENTS);
                 object toReturn = Activator.CreateInstance(targetType);
 
-                MethodInfo method = typeof(Faker).GetMethods().Single(m => m.Name == "Create" && m.IsGenericMethodDefinition);
-                method = method.MakeGenericMethod(innerType);
                 object[] arr = new object[1];
                 for (int i = 0; i < elementsCount; ++i)
                 {
-                    arr[0] = method.Invoke(context.Faker, null);
+                    arr[0] = GetGenericCreate(innerType).Invoke(context.Faker, null);
                     targetType.GetMethod("Add").Invoke(toReturn, arr);
                 }
                 

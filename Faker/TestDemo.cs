@@ -8,14 +8,38 @@ namespace Faker
 {
     class TestDemo
     {
+        struct Bar
+        {
+            public int y;
+            public double Dyty { get; set; }
+        }
+
         struct Foo
         {
-            public Foo(List<string> bobo)
+            public Bar bar;
+
+            public Foo(double d)
             {
+                bar = new Bar();
+                bobo = null;
+                tiy = 0;
+                ghgh = -213;
+                suck = null;
+            }
+
+            public Foo(List<string> bobo, int tiy, double ghgh)
+            {
+                bar = new Bar();
                 this.bobo = bobo;
+                this.tiy = tiy;
+                this.ghgh = ghgh;
+                suck = null;
             }
 
             public List<string> bobo;
+            public int tiy;
+            public double ghgh;
+            public string suck;
         }
 
         static void Main(String[] args)
@@ -59,6 +83,12 @@ namespace Faker
             {
                 Console.WriteLine(s + " ----- ");
             }
+
+           
+            Console.WriteLine(foo.ghgh);
+            Console.WriteLine(foo.suck);
+            Console.WriteLine(foo.bar.y);
+            Console.WriteLine(foo.bar.Dyty);
 
             Console.ReadLine();
         }
