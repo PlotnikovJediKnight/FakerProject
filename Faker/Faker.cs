@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using IGeneratorNamespace;
+using StructGeneratorNamespace;
+
 
 namespace Faker
 {
-    public interface IFaker
-    {
-        T Create<T>();
-    }
-
+    
     public class Faker : IFaker
     {
-        private static readonly int SUPPORTED_TOTAL = 5;
+        private static readonly int SUPPORTED_TOTAL = 6;
         public Faker()
         {
             rand = new Random();
@@ -23,14 +18,16 @@ namespace Faker
             generators[2] = new RealGenerator();
             generators[3] = new DateGenerator();
             generators[4] = new ListGenerator();
+            generators[5] = new StructGenerator();
         }
 
         public T Create<T>()
         {    
-            return (T) Recreate(typeof(T));
+            return (T) Create(typeof(T));
         }
         
-        private object Recreate(Type t)
+        
+        private object Create(Type t)
         {
             for (int i = 0; i < SUPPORTED_TOTAL; ++i)
             {
@@ -39,8 +36,11 @@ namespace Faker
                     return generators[i].Generate(new GeneratorContext(rand, t, this));
                 }
             }
-            return null;
+            object generatedObject = null;
+
+            return generatedObject;
         }
+
 
         private IGenerator[] generators;
         private Random rand;

@@ -2,34 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+
+using IGeneratorNamespace;
 
 namespace Faker
-{
-    public abstract class IGenerator
-    {
-        public abstract object Generate(GeneratorContext context); 
-        public abstract bool CanGenerate(Type type);
-
-        public TypeCode GetUnderlyingTypeCode(Type type)
-        {
-            TypeCode typeCode = Type.GetTypeCode(type);
-            return typeCode;
-        }
-    }
-
-    public class GeneratorContext
-    {
-        public Random Random { get; }
-        public Type TargetType { get; } 
-        public IFaker Faker { get; }
-        public GeneratorContext(Random random, Type targetType, IFaker faker) { 
-            Random = random;
-            TargetType = targetType;
-            Faker = faker; 
-        }
-    }
+{ 
 
     public class IntGenerator : IGenerator
     {
@@ -205,16 +182,16 @@ namespace Faker
                 if (innerTypes.Length != 1) throw new NotSupportedException();
                 int elementsCount = context.Random.Next(0, MAX_ELEMENTS);
                 object toReturn = Activator.CreateInstance(targetType);
-               
-                
 
+                MethodInfo method = typeof(Faker).GetMethods().Single(m => m.Name == "Create" && m.IsGenericMethodDefinition);
+                method = method.MakeGenericMethod(innerType);
+                object[] arr = new object[1];
                 for (int i = 0; i < elementsCount; ++i)
                 {
-                    MethodInfo method = typeof(Faker).GetMethods().Single(m => m.Name == "Create" && m.IsGenericMethodDefinition);
-                    method = method.MakeGenericMethod(innerType);
-                    object[] arr = new object[1]; arr[0] = method.Invoke(context.Faker, null);
-                    (targetType).GetMethod("Add").Invoke(toReturn, arr);
+                    arr[0] = method.Invoke(context.Faker, null);
+                    targetType.GetMethod("Add").Invoke(toReturn, arr);
                 }
+                
                 return toReturn;
             }
             else
@@ -223,6 +200,8 @@ namespace Faker
 
         public override bool CanGenerate(Type type)
         {
+            if (type.IsValueType) return false;
+            if (!type.IsGenericType) return false;
             if (type.GetGenericTypeDefinition() == typeof(List<>)) {  return true; }
             return false;
         }

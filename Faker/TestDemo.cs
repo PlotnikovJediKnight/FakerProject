@@ -8,6 +8,16 @@ namespace Faker
 {
     class TestDemo
     {
+        struct Foo
+        {
+            public Foo(List<string> bobo)
+            {
+                this.bobo = bobo;
+            }
+
+            public List<string> bobo;
+        }
+
         static void Main(String[] args)
         {
             Faker faker = new Faker();
@@ -24,7 +34,8 @@ namespace Faker
 
             DateTime date = faker.Create<DateTime>();
 
-            List<string> list = faker.Create<List<string>>();
+            List<List<string>> list = faker.Create<List<List<string>>>();
+            Foo foo = faker.Create<Foo>();
 
             Console.WriteLine(d);
             Console.WriteLine(str);
@@ -36,9 +47,19 @@ namespace Faker
             Console.WriteLine(ush);
             Console.WriteLine(uit);
             Console.WriteLine(date);
-            foreach (string s in list){
-                Console.WriteLine(s + " + ");
+            foreach (List<string> s in list){
+                foreach(string ls  in s){
+                    Console.WriteLine(ls + " + ");
+                }
             }
+
+            Console.WriteLine("=======================================");
+
+            foreach (string s in foo.bobo)
+            {
+                Console.WriteLine(s + " ----- ");
+            }
+
             Console.ReadLine();
         }
     }
