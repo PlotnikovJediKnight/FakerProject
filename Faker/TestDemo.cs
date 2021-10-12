@@ -15,6 +15,16 @@ namespace Faker
     {
         delegate void test_method();
 
+        static void TestStringType()
+        {
+            Faker faker = new Faker();
+
+            string str = faker.Create<string>();
+            TestFramework.Assert(str != null, "String went wrong!");
+            Console.WriteLine("String = " + str);
+            Console.WriteLine("==========================================");
+        }
+
         static void TestRealTypes()
         {
             Faker faker = new Faker();
@@ -67,6 +77,9 @@ namespace Faker
 
             testDelegate = TestRealTypes;
             r.RunTest(testDelegate, "RealTypesTest");
+
+            testDelegate = TestStringType;
+            r.RunTest(testDelegate, "StringTypeTest");
 
             Console.ReadLine();
         }
