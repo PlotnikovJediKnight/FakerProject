@@ -1,94 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TestsProject;
 
 namespace Faker
 {
+    #region
+    class A
+    {
+        private A() { }
+    }
+    #endregion
+
+    
     class TestDemo
     {
-        struct Bar
+        delegate void test_method();
+
+        static void TestIntTypes()
         {
-            public int y;
-            public double Dyty { get; set; }
-        }
+            Faker faker = new Faker();
 
-        struct Foo
-        {
-            public Bar bar;
+            byte b = faker.Create<byte>();
+            sbyte sb = faker.Create<sbyte>();
+            ushort us = faker.Create<ushort>();
+            int i = faker.Create<int>();
+            short sh = faker.Create<short>();
 
-            public Foo(double d)
-            {
-                bar = new Bar();
-                bobo = null;
-                tiy = 0;
-                ghgh = -213;
-                suck = null;
-            }
+            TestFramework.Assert(b >= 0 && b < byte.MaxValue, "Byte went wrong!");
+            TestFramework.Assert(sb >= 0 && sb < sbyte.MaxValue, "Short Byte went wrong!");
+            TestFramework.Assert(us >= 0 && us < ushort.MaxValue, "Unsigned short went wrong!");
+            TestFramework.Assert(i >= 0 && i < int.MaxValue, "Int went wrong!");
+            TestFramework.Assert(sh >= 0 && sh < short.MaxValue, "Short went wrong!");
 
-            public Foo(List<string> bobo, int tiy, double ghgh)
-            {
-                bar = new Bar();
-                this.bobo = bobo;
-                this.tiy = tiy;
-                this.ghgh = ghgh;
-                suck = null;
-            }
-
-            public List<string> bobo;
-            public int tiy;
-            public double ghgh;
-            public string suck;
+            Console.WriteLine("Byte = " + b);
+            Console.WriteLine("Short Byte = " + sb);
+            Console.WriteLine("Unsigned short = " + us);
+            Console.WriteLine("Int = " + i);
+            Console.WriteLine("Short = " + sh);
         }
 
         static void Main(String[] args)
         {
+
             Faker faker = new Faker();
-            int d = faker.Create<int>();
-            short sh = faker.Create<short>();
-            sbyte sb = faker.Create<sbyte>();
-            byte b = faker.Create<byte>();
-            string str = faker.Create<string>();
-            ushort ush = faker.Create<ushort>();
-            uint uit = faker.Create<uint>();
 
-            double p = faker.Create<double>();
-            float f = faker.Create<float>();
+            test_method testDelegate;
+            TestRunner<test_method> r = new TestRunner<test_method>();
 
-            DateTime date = faker.Create<DateTime>();
-
-            List<List<string>> list = faker.Create<List<List<string>>>();
-            Foo foo = faker.Create<Foo>();
-
-            Console.WriteLine(d);
-            Console.WriteLine(str);
-            Console.WriteLine(p);
-            Console.WriteLine(f);
-            Console.WriteLine(sh);
-            Console.WriteLine(b);
-            Console.WriteLine(sb);
-            Console.WriteLine(ush);
-            Console.WriteLine(uit);
-            Console.WriteLine(date);
-            foreach (List<string> s in list){
-                foreach(string ls  in s){
-                    Console.WriteLine(ls + " + ");
-                }
-            }
-
-            Console.WriteLine("=======================================");
-
-            foreach (string s in foo.bobo)
-            {
-                Console.WriteLine(s + " ----- ");
-            }
-
-           
-            Console.WriteLine(foo.ghgh);
-            Console.WriteLine(foo.suck);
-            Console.WriteLine(foo.bar.y);
-            Console.WriteLine(foo.bar.Dyty);
+            testDelegate = TestIntTypes;
+            r.RunTest(testDelegate, "IntTypesTest");
 
             Console.ReadLine();
         }

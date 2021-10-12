@@ -1,6 +1,7 @@
 ﻿using System;
 using IGeneratorNamespace;
 using StructGeneratorNamespace;
+using ClassGeneratorNamespace;
 
 
 namespace Faker
@@ -8,7 +9,7 @@ namespace Faker
     
     public class Faker : IFaker
     {
-        private static readonly int SUPPORTED_TOTAL = 6;
+        private static readonly int SUPPORTED_TOTAL = 7;
         public Faker()
         {
             rand = new Random();
@@ -19,6 +20,7 @@ namespace Faker
             generators[3] = new DateGenerator();
             generators[4] = new ListGenerator();
             generators[5] = new StructGenerator();
+            generators[6] = new ClassGenerator();
         }
 
         public T Create<T>()

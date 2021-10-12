@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using IGeneratorNamespace;
 
@@ -6,7 +7,7 @@ namespace ClassGeneratorNamespace
 {
     public class ClassGenerator : IGenerator
     {
-
+        private List<string> previous = new List<string>();
         public override object Generate(GeneratorContext context)
         {
             Type targetType = context.TargetType;
@@ -14,17 +15,17 @@ namespace ClassGeneratorNamespace
 
             if (CanGenerate(targetType))
             {
-                //if (DoesCauseCycle(typeName))
-                //{
-                //    return null;
-                //}
-                //previous.Add(typeName);
+                if (DoesCauseCycle(typeName))
+                {
+                    return null;
+                }
+                previous.Add(typeName);
 
                 object toReturn = InitializeObject(context, targetType);
                 InitializeFields(toReturn, context);
                 InitializeProperties(toReturn, context);
 
-                //previous.RemoveAt(previous.Count - 1);
+                previous.RemoveAt(previous.Count - 1);
                 return toReturn;
             }
             else
@@ -33,13 +34,13 @@ namespace ClassGeneratorNamespace
 
         public override bool CanGenerate(Type type)
         {
-            return type.IsValueType && !type.IsPrimitive && !type.IsEnum;
+            return type.IsClass && !type.IsGenericType;
         }
 
-        //private bool DoesCauseCycle(string name)
-        //{
-        //    return previous.Contains(name);
-        //}
+        private bool DoesCauseCycle(string name)
+        {
+            return previous.Contains(name);
+        }
 
         private object InitializeObject(GeneratorContext context, Type targetType)
         {
@@ -70,7 +71,7 @@ namespace ClassGeneratorNamespace
             }
             else
             {
-                return Activator.CreateInstance(targetType);
+                return null;
             }
         }
 

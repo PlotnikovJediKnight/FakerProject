@@ -56,6 +56,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TestsProject, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\TestsProject.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Faker.cs" />
@@ -82,6 +86,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ClassGenerator\ClassGenerator.csproj">
+      <Project>{831c7115-4670-4d26-8013-bf007496c48f}</Project>
+      <Name>ClassGenerator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IGenerator\IGenerator.csproj">
       <Project>{b81b7cc7-6d11-45b2-a983-2d63efee927e}</Project>
       <Name>IGenerator</Name>
